@@ -60,6 +60,65 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu entorno local:
 
 Para crear la base de datos y las tablas necesarias en SQL Server, ejecuta el script que se proporciona [aquí](#archivo-databasesql-para-sql-server).
 
+## Archivo `database.sql` para SQL Server
+
+A continuación, se presenta el script SQL que debes ejecutar en tu servidor de **SQL Server** para crear la base de datos y las tablas:
+
+```sql
+-- Creación de la base de datos
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'banco_db')
+BEGIN
+    CREATE DATABASE banco_db;
+END
+GO
+
+USE banco_db;
+GO
+
+-- Creación de la tabla de clientes
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='clientes' and xtype='U')
+BEGIN
+    CREATE TABLE clientes (
+        id BIGINT IDENTITY(1,1) PRIMARY KEY,
+        nombre NVARCHAR(255) NOT NULL,
+        email NVARCHAR(255) UNIQUE NOT NULL
+        -- Agrega aquí otros campos relevantes para los clientes
+    );
+END
+GO
+
+-- Creación de la tabla de cuentas
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='cuentas' and xtype='U')
+BEGIN
+    CREATE TABLE cuentas (
+        id BIGINT IDENTITY(1,1) PRIMARY KEY,
+        numero_cuenta NVARCHAR(255) UNIQUE NOT NULL,
+        saldo DECIMAL(18, 2) NOT NULL,
+        cliente_id BIGINT,
+        FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+        -- Agrega aquí otros campos relevantes para las cuentas
+    );
+END
+GO
+
+-- Creación de la tabla de transferencias
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='transferencias' and xtype='U')
+BEGIN
+    CREATE TABLE transferencias (
+        id BIGINT IDENTITY(1,1) PRIMARY KEY,
+        cuenta_origen_id BIGINT,
+        cuenta_destino_id BIGINT,
+        monto DECIMAL(18, 2) NOT NULL,
+        fecha DATETIME NOT NULL,
+        FOREIGN KEY (cuenta_origen_id) REFERENCES cuentas(id),
+        FOREIGN KEY (cuenta_destino_id) REFERENCES cuentas(id)
+        -- Agrega aquí otros campos relevantes para las transferencias
+    );
+END
+GO
+
+```sql
+
 ## Endpoints de la API
 
 A continuación, se describen los principales endpoints de la API:
