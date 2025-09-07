@@ -117,7 +117,7 @@ BEGIN
 END
 GO
 
-```sql
+```
 
 ## Endpoints de la API
 
