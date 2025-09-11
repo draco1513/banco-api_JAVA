@@ -66,56 +66,72 @@ A continuación, se presenta el script SQL que debes ejecutar en tu servidor de 
 
 ```sql
 -- Creación de la base de datos
+
+-- Crear la base de datos
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'banco_db')
 BEGIN
-    CREATE DATABASE banco_db;
-END
+CREATE DATABASE banco_db;
 GO
 
+-- Usar la base de datos
 USE banco_db;
 GO
 
--- Creación de la tabla de clientes
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='clientes' and xtype='U')
-BEGIN
-    CREATE TABLE clientes (
-        id BIGINT IDENTITY(1,1) PRIMARY KEY,
-        nombre NVARCHAR(255) NOT NULL,
-        email NVARCHAR(255) UNIQUE NOT NULL
-        -- Agrega aquí otros campos relevantes para los clientes
-    );
-END
+-- Tabla: persona
+CREATE TABLE persona (
+    id BIGINT PRIMARY KEY,
+    nombre NVARCHAR(255),
+    genero NVARCHAR(50),
+    edad INT,
+    identificacion NVARCHAR(20),
+    direccion NVARCHAR(255),
+    telefono NVARCHAR(20)
+);
 GO
 
--- Creación de la tabla de cuentas
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='cuentas' and xtype='U')
-BEGIN
-    CREATE TABLE cuentas (
-        id BIGINT IDENTITY(1,1) PRIMARY KEY,
-        numero_cuenta NVARCHAR(255) UNIQUE NOT NULL,
-        saldo DECIMAL(18, 2) NOT NULL,
-        cliente_id BIGINT,
-        FOREIGN KEY (cliente_id) REFERENCES clientes(id)
-        -- Agrega aquí otros campos relevantes para las cuentas
-    );
-END
+-- Tabla: cliente
+CREATE TABLE cliente (
+    id BIGINT PRIMARY KEY,
+    cliente_id BIGINT FOREIGN KEY REFERENCES persona(id),
+    contrasena NVARCHAR(255),
+    estado BIT
+);
 GO
 
--- Creación de la tabla de transferencias
-IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='transferencias' and xtype='U')
-BEGIN
-    CREATE TABLE transferencias (
-        id BIGINT IDENTITY(1,1) PRIMARY KEY,
-        cuenta_origen_id BIGINT,
-        cuenta_destino_id BIGINT,
-        monto DECIMAL(18, 2) NOT NULL,
-        fecha DATETIME NOT NULL,
-        FOREIGN KEY (cuenta_origen_id) REFERENCES cuentas(id),
-        FOREIGN KEY (cuenta_destino_id) REFERENCES cuentas(id)
-        -- Agrega aquí otros campos relevantes para las transferencias
-    );
-END
+-- Tabla: cuenta
+CREATE TABLE cuenta (
+    id BIGINT PRIMARY KEY,
+    numero_cuenta NVARCHAR(20),
+    tipo_cuenta NVARCHAR(20),
+    saldo_inicial DECIMAL(19,2),
+    estado BIT,
+    cliente_id BIGINT FOREIGN KEY REFERENCES cliente(id)
+);
 GO
+
+-- Tabla: movimiento
+CREATE TABLE movimiento (
+    id BIGINT PRIMARY KEY,
+    fecha DATETIME2(7),
+    tipo_movimiento NVARCHAR(20),
+    valor DECIMAL(19,2),
+    saldo DECIMAL(19,2),
+    cuenta_id BIGINT FOREIGN KEY REFERENCES cuenta(id)
+);
+GO
+
+-- Tabla: transferencia
+CREATE TABLE transferencia (
+    id BIGINT PRIMARY KEY,
+    cuenta_origen_id BIGINT,
+    cuenta_destino_id BIGINT,
+    monto DECIMAL(19,2),
+    fecha DATETIME2(7),
+    FOREIGN KEY (cuenta_origen_id) REFERENCES cuenta(id),
+    FOREIGN KEY (cuenta_destino_id) REFERENCES cuenta(id)
+);
+GO
+
 
 ```
 
