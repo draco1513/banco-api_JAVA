@@ -19,11 +19,11 @@ public class BancoApiApplication {
 	CommandLineRunner testDatabaseConnection(DataSource dataSource) {
 		return args -> {
 			try (Connection connection = dataSource.getConnection()) {
-				System.out.println("✅ Conexión a la base de datos exitosa!");
+				System.out.println("Conexión a la base de datos exitosa!");
 				System.out.println("Base de datos: " + connection.getMetaData().getDatabaseProductName());
 				System.out.println("Versión: " + connection.getMetaData().getDatabaseProductVersion());
 			} catch (SQLException e) {
-				System.err.println("❌ Error al conectar a la base de datos");
+				System.err.println("Error al conectar a la base de datos");
 				e.printStackTrace();
 			}};}
 

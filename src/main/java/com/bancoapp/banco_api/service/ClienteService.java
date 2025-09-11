@@ -20,7 +20,7 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
 
-    public Optional<Cliente> obtenerCliente(Long id) {
+    public Optional<Cliente> obtenerClientePorId(Long id) {
         return clienteRepository.findById(id);
     }
 
@@ -29,16 +29,16 @@ public class ClienteService {
     }
 
     public Cliente actualizarCliente(Long id, Cliente clienteActualizado) {
-        Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-
-        cliente.setNombre(clienteActualizado.getNombre());
-        cliente.setIdentificacion(clienteActualizado.getIdentificacion());
-        cliente.setDireccion(clienteActualizado.getDireccion());
-        cliente.setTelefono(clienteActualizado.getTelefono());
-        cliente.setEstado(clienteActualizado.getEstado());
-
-        return clienteRepository.save(cliente);
+        return clienteRepository.findById(id)
+                .map(cliente -> {
+                    cliente.setNombre(clienteActualizado.getNombre());
+                    cliente.setDireccion(clienteActualizado.getDireccion());
+                    cliente.setTelefono(clienteActualizado.getTelefono());
+                    cliente.setContrasena(clienteActualizado.getContrasena());
+                    cliente.setEstado(clienteActualizado.isEstado());
+                    return clienteRepository.save(cliente);
+                })
+                .orElse(null);
     }
 
     public void eliminarCliente(Long id) {

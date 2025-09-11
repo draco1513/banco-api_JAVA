@@ -7,7 +7,7 @@ import com.bancoapp.banco_api.model.Movimiento;
 import com.bancoapp.banco_api.repository.ClienteRepository;
 import com.bancoapp.banco_api.repository.CuentaRepository;
 import com.bancoapp.banco_api.repository.MovimientoRepository;
-
+import com.lowagie.text.Document; // <-- ESTE ES EL IMPORT CORRECTO
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
@@ -15,21 +15,21 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.stereotype.Service;
-import com.lowagie.text.Document;
 
 import java.io.ByteArrayOutputStream;
-import java.time.*;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 
 @Service
-public class MovimientoService {
-
+public class ReporteService {
 
     private final CuentaRepository cuentaRepository;
     private final MovimientoRepository movimientoRepository;
     private final ClienteRepository clienteRepository;
 
-    public MovimientoService(CuentaRepository cuentaRepository, MovimientoRepository movimientoRepository, ClienteRepository clienteRepository) {
+    public ReporteService(CuentaRepository cuentaRepository, MovimientoRepository movimientoRepository, ClienteRepository clienteRepository) {
         this.cuentaRepository = cuentaRepository;
         this.movimientoRepository = movimientoRepository;
         this.clienteRepository = clienteRepository;
@@ -65,11 +65,11 @@ public class MovimientoService {
         String clienteNombre = clienteRepository.findById(clienteId).map(Cliente::getNombre).orElse("Desconocido");
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            // Se usa el Document de com.lowagie.text, que no es abstracto
+            // AHORA SÍ SE USA LA CLASE CORRECTA, QUE NO ES ABSTRACTA
             Document doc = new Document(PageSize.A4.rotate());
             PdfWriter.getInstance(doc, baos);
 
-            doc.open(); // Ahora funciona
+            doc.open(); // Funciona
             doc.add(new Paragraph("Estado de Cuenta - Cliente: " + clienteNombre));
             doc.add(new Paragraph(String.format("Rango: %s a %s", fechaInicio, fechaFin)));
             doc.add(new Paragraph(" "));
@@ -89,11 +89,12 @@ public class MovimientoService {
                 table.addCell(String.valueOf(r.getSaldoDisponible()));
             }
 
-            doc.add(table); // Ahora funciona
-            doc.close(); // Ahora funciona
+            doc.add(table); // Funciona
+            doc.close(); // Funciona
 
             return Base64.getEncoder().encodeToString(baos.toByteArray());
         } catch (Exception e) {
+            // Es buena práctica envolver la excepción original para no perder la causa
             throw new RuntimeException("No se pudo generar el PDF: " + e.getMessage(), e);
         }
     }

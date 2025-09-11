@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cuentas")
+@RequestMapping("/api/cuentas")
 public class CuentaController {
 
     private final CuentaService cuentaService;
@@ -18,13 +18,13 @@ public class CuentaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Cuenta>> listarCuentas() {
-        return ResponseEntity.ok(cuentaService.listarCuentas());
+    public List<Cuenta> listarCuentas() {
+        return cuentaService.listarCuentas();
     }
 
     @PostMapping
-    public ResponseEntity<Cuenta> crearCuenta(@RequestBody Cuenta cuenta) {
-        return ResponseEntity.ok(cuentaService.crearCuenta(cuenta));
+    public Cuenta crearCuenta(@RequestBody Cuenta cuenta) {
+        return cuentaService.crearCuenta(cuenta);
     }
 
     @DeleteMapping("/{numeroCuenta}")

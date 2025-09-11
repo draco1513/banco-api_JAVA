@@ -2,19 +2,18 @@ package com.bancoapp.banco_api.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = false)
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "cliente")
 @Data
-public class Cliente {
+@PrimaryKeyJoinColumn(name = "cliente_id")
+public class Cliente extends Persona {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(nullable = false)
+    private String contrasena;
 
-    private String nombre;
-    private String identificacion;
-    private String direccion;
-    private String telefono;
-    private String estado;
+    private boolean estado;
 }

@@ -10,7 +10,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
-
     private final ClienteService clienteService;
 
     public ClienteController(ClienteService clienteService) {
@@ -22,9 +21,10 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.listarClientes());
     }
 
+    // CORRECTO: Solo un método para GET /{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> obtenerCliente(@PathVariable Long id) {
-        return clienteService.obtenerCliente(id)
+    public ResponseEntity<Cliente> obtenerClientePorId(@PathVariable Long id) {
+        return clienteService.obtenerClientePorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -34,9 +34,15 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.crearCliente(cliente));
     }
 
+    // CORRECTO: Solo un método para PUT /{id}
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> actualizarCliente(@PathVariable Long id, @RequestBody Cliente cliente) {
-        return ResponseEntity.ok(clienteService.actualizarCliente(id, cliente));
+    public ResponseEntity<Cliente> actualizarCliente(@PathVariable Long id, @RequestBody Cliente clienteActualizado) {
+        Cliente cliente = clienteService.actualizarCliente(id, clienteActualizado);
+        if (cliente != null) {
+            return ResponseEntity.ok(cliente);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")

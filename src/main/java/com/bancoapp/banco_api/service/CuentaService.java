@@ -24,6 +24,6 @@ public class CuentaService {
     }
 
     public void eliminarCuenta(String numeroCuenta) {
-        cuentaRepository.deleteById(numeroCuenta);
+        cuentaRepository.deleteById(Long.valueOf(numeroCuenta));
     }
 }
